@@ -1,0 +1,63 @@
+﻿@using System.Drawing
+@using Jmelosegui.Mvc.GoogleMap
+@model CustomGoogleMap.Models.Store
+
+@{
+    ViewBag.Title = "ViewMap";
+}
+
+<div class="text-center" style="margin-top: 15%">
+    @{
+        Html.GoogleMap()
+            .Name("map")
+            .Center(c => c.Latitude(Model.Latitude)
+            .Longitude(Model.Longitude))
+            .Zoom(14)
+            .Height(400)
+            .StyledMapTypes(map =>
+                map.Add()
+                    .Styles(style =>
+                    {
+                        style.Add()
+                            .HueColor(Color.DarkBlue)
+                            .Visibility(MapTypeStylerVisibility.Simplified)
+                            .Gamma(1F)
+                            .Weight(0.5F);
+
+                        style.Add()
+                            .ElementType(ElementType.Labels)
+                            .Visibility(MapTypeStylerVisibility.On);
+
+                        style.Add()
+                            .FeatureType(FeatureType.Water)
+                            .Color(Color.DarkCyan);
+                    })
+
+                    .MapTypeName("Custom Style")
+            )
+            .MapTypeId("Custom Style")
+            .Markers(marker => marker.Add()
+                .Latitude(Model.Latitude)
+                .Longitude(Model.Longitude)
+                .Window(window => window.Add()
+                    .MaxWidth(500)
+                     .DisableAutoPan(false)
+                     .OpenOnRightClick(false)
+                    .Content(
+                    @<text>
+                        <div id="content">
+                            <div id="bodyContent">
+                                <p style="font-size: 22px"><b>Location:</b> @Html.DisplayFor(model => model.Address)</p>
+                                <p>
+                                    @Html.Raw("<div style='text-align:center;'>" + Model.Content.Replace("\n", "<br />") + "</div>")
+                                </p>
+                            </div>
+                        </div>
+
+                    </text>))).Render();}
+    <br />
+    <br />
+    @section scripts {
+        @(Html.GoogleMap().ScriptRegistrar())
+    }
+</div>
